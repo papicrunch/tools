@@ -1,0 +1,6 @@
+p = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+position = p.selectPosition()
+new_node = p.pwd().createNode("file")
+new_node.setPosition(position)
+new_node.setColor(hou.Color((0.33,0,0.67)))
+new_node.setName("file_1",unique_name=True)

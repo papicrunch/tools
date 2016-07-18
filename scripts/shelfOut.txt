@@ -1,0 +1,27 @@
+def fils(node):
+        result = []
+        for i in node.outputs():
+                result.append(i)
+                result += fils(i)
+        return result
+
+sels = hou.selectedNodes()
+
+if sels == ():
+        hou.ui.displayMessage("select node please")
+else:
+        sel = sels[-1]
+        down_conn = sel.outputConnections()
+        all_down = fils(sel) 
+
+for i in all_down:
+        i.move((0,-1))
+
+par = sel.parent()
+nul = par.createNode(node_type_name = "null" , node_name = 'OUT')
+nul.setPosition(sel.position()-hou.Vector2(0,1))
+nul.setInput(0,sel)
+nul.setColor(hou.Color((.36,.36,.36)))
+
+for i in down_conn:
+        i.outputNode().setInput(i.inputIndex(),nul,0)

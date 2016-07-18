@@ -1,0 +1,6 @@
+--- hscript name.cmd --- in commandLineTools
+
+mread file
+render -V /obj/geometryNode
+mnew
+quit
