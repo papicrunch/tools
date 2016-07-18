@@ -1,0 +1,13 @@
+node = hou.pwd()
+geo = node.geometry()
+
+attriPrim = geo.findPrimAttrib('abcPath')
+
+for prim in geo.prims():
+    tmp_path = prim.stringAttribValue(attriPrim)
+    tmp_path_split = tmp_path.rsplit("/",1)
+    
+    tmp_path = tmp_path_split[0]
+    print tmp_path
+    prim.setAttribValue(attriPrim, tmp_path)
+    del tmp_path, tmp_path_split
