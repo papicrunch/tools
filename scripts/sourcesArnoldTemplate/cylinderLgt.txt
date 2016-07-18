@@ -1,0 +1,32 @@
+cylinder_light
+{
+ name aiAreaLightShape3
+ radius 1
+ decay_type "quadratic"
+ matrix
+ 1 0 0 0
+ 0 1 0 0
+ 0 0 1 0
+ 0 0 0 1
+ color 1 0.778662741 0.321466774
+ intensity 0.00394674065
+ exposure 4
+ cast_shadows on
+ cast_volumetric_shadows on
+ shadow_density 1
+ shadow_color 0 0 0
+ samples 2
+ normalize off
+ affect_diffuse on
+ affect_specular on
+ affect_volumetrics on
+ diffuse 1
+ specular .1
+ sss 0
+ indirect 0
+ max_bounces 0
+ filters "aiLightDecay2"
+ volume_samples 1
+ volume 1
+}
+

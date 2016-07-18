@@ -1,0 +1,11 @@
+light_decay
+{
+ name aiLightDecay1
+ use_near_atten off
+ use_far_atten on
+ near_start 0
+ near_end 0
+ far_start 0
+ far_end 35
+}
+
