@@ -1,0 +1,2 @@
+- hscript text export ala pa_deadLineSubmit
+- setup Site variable
