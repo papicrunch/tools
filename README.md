@@ -5,6 +5,6 @@ opName : papicrunch::paName::1.0
 
 opLabel : pa Name
 
-tabSub : pa Branch
+tabSub : pa MasterName
 
-saveLib : pa_name
+saveLib : pa_MasterName
