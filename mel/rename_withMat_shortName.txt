@@ -1,0 +1,7 @@
+string $shadName[] = stringArrayRemoveDuplicates(ls("-mat",listConnections(listConnections("-type","shadingEngine",`ls -sl -o -dag -s`)))); 
+string $allObjs[] = `ls-sl`;
+
+for($x=0;$x<size($allObjs);$x++) {
+    string $shortName = `match "[^|]*$" $allObjs[$x]`;
+    rename $allObjs[$x] ($shadName[0] +$shadName[1]+ "__" + $shortName);
+}

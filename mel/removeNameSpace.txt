@@ -1,0 +1,23 @@
+//Always make a copy of your maya scene file before running a script which will alter your maya file.
+//You are free to use and distribute this script in anyway you like. Heten Daiya.
+global proc nsRemover()
+{
+namespace -set ":";
+while (size (`namespaceInfo -lon`) > size(`file -q -r -shn`) + 2)
+{
+for ($nsReach in `namespaceInfo -lon`)
+{
+if ($nsReach == "UI" || $nsReach =="shared" || (catchQuiet (`namespace -f -mv $nsReach ":"`))==1)
+{
+print "You have encountered UI or Shared namespace or a namespace coming from a reference file. Continuing.";
+continue;
+}
+else
+{
+namespace -rm $nsReach;
+}
+}
+}
+}
+
+nsRemover();
