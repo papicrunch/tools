@@ -1,0 +1,1 @@
+for %i in (*.*) do C:/"Program Files"/"Side Effects Software"/"Houdini 15.5.607"/bin/iconvert.exe %i %i.rat
