@@ -1,0 +1,42 @@
+#import os
+import sys
+
+from PySide2 import QtCore, QtWidgets, QtUiTools
+
+MainWidget = None
+DisplayLabel = None
+
+def displayDialog():
+
+    global MainWidget
+    global DisplayLabel
+    
+    texte = MainWidget.findChild(QtWidgets.QLineEdit, "lineEdit").text()
+    radio_btn = "n"
+    if(MainWidget.findChild(QtWidgets.QRadioButton, "radioButton").isChecked()):
+        radio_btn = "y"
+    affiche = radio_btn + "\n" + texte
+    # Create a new dialog to show the information.
+    if DisplayLabel is None:
+        DisplayLabel = QtWidgets.QLabel()
+        DisplayLabel.resize(200, 100)
+    DisplayLabel.setText(affiche)
+    DisplayLabel.show()
+    DisplayLabel.activateWindow()
+
+def createInterface():
+    global MainWidget
+    
+    ui_file_path = "D:/tmp_work/UI/testUi.ui"
+    loader = QtUiTools.QUiLoader()
+    ui_file = QtCore.QFile(ui_file_path)
+    ui_file.open(QtCore.QFile.ReadOnly)
+    MainWidget = loader.load(ui_file)
+    
+    layout = MainWidget.layout()
+    
+    push_btn = MainWidget.findChild(QtWidgets.QPushButton, "pushButton")
+    push_btn.clicked.connect(displayDialog)
+    
+    
+    return MainWidget
