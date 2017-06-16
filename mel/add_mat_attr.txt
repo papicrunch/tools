@@ -1,0 +1,29 @@
+proc string getSurfaceShader (string $objName) {
+
+// This assumes you want ONLY the shape node at the selected level of the
+// hierarchy, for the object whose transform name is passed in as the argument.
+
+string $myShapeNode[] = `listRelatives -children -shapes $objName`;
+string $mySGs[] = `listConnections -type shadingEngine $myShapeNode[0]`;
+string $surfaceShader[] = `listConnections ($mySGs[0] + ".surfaceShader")`;
+return $surfaceShader[0];
+}
+
+string $mySel[] = `ls -sl`;
+
+
+for( $object in $mySel )
+{
+    string $objMat = getSurfaceShader($object);
+    string $shapes[] = `listRelatives -s $object`;
+
+    
+    if (`attributeExists "mat" $shapes[0]`) {
+        print "Attribute exists\n";
+    } else {
+        addAttr -ln mat -dt "string" $shapes[0];
+        setAttr -type "string" ($shapes[0]+".mat") ($objMat);
+        
+    }
+}
+
