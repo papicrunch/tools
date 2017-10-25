@@ -1,0 +1,16 @@
+string $mySel[] = `ls -sl`;
+
+
+for( $object in $mySel )
+{
+    string $shapes[] = `listRelatives -s $object`;
+    if (`attributeExists "smoothing" $shapes[0]`) {
+        print "Attribute exists\n";
+    } else {
+        addAttr -ln smoothing -dt "string" $shapes[0];
+        setAttr -type "string" ($shapes[0]+".smoothing") ("ok");
+        
+    }
+
+
+}

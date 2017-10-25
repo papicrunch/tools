@@ -1,0 +1,37 @@
+string $mySel[] = `ls -sl`;
+
+for($layer in `listConnections -type "displayLayer" $mySel`)
+{
+    string $shapes[] = `listRelatives -s $mySel`;
+    if (`attributeExists "layerUv" $shapes[0]`) {
+        print "Attribute exists\n";
+    } else {
+        addAttr -ln layerUv -dt "string" $shapes[0];
+        setAttr -type "string" ($shapes[0]+".layerUv") $layer;
+        
+    }
+}
+
+
+--------------------------- WORK
+
+string $mySel[] = `ls -sl`;
+
+for( $object in $mySel )
+{
+    string $shapes[] = `listRelatives -s $object`;
+    if (`attributeExists "layerUv" $shapes[0]`) {
+        print "Attribute exists\n";
+    } else {
+        for($layer in `listConnections -type "displayLayer" $object`)
+        {
+            addAttr -ln layerUv -dt "string" $shapes[0];
+            setAttr -type "string" ($shapes[0]+".layerUv") $layer;            
+        
+        }
+        
+        
+        
+    }
+
+}
