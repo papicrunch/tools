@@ -1,0 +1,167 @@
+attribwrangle/snippet
+	Blur Attribute
+	string Attrib = chs("Attrib_To_Blur");
+	float maxdist = ch('maxdist'); 
+	int blur = chi('blur');
+	int pc = pcopen(0, 'P', @P, maxdist, blur);
+	vector Val = pcfilter(pc,Attrib);
+	setpointattrib(0,Attrib,@ptnum,Val,"set");
+attribwrangle/snippet
+	Bend Curves
+	int pts[] = primpoints(0, @primnum);
+
+	vector rest = point(0, "P", pts[0]);
+	vector prev_pos = rest;
+	matrix3 frame = ident();
+
+	for (int i = 0; i < len(pts); i++)
+	{
+		vector pos = point(0, "P", pts[i]);
+		rotate(frame, 0.1, {0, 0, 1});
+		vector new_pos = (pos - rest) * frame + prev_pos;
+		rest = pos;
+		prev_pos = new_pos;
+		setpointattrib(0, "P", pts[i], new_pos);
+	}
+attribwrangle/snippet
+	Curl Curves
+	#define TWO_PI 6.2831852
+	addpointattrib(0, "N", {0, 0, 0});
+	int pts[] = primpoints(0, @primnum);
+	int npt = len(pts);
+	// Loop variables.
+	vector rest = point(0, "P", pts[0]);
+	vector prev_pos = rest;
+	matrix3 frame = ident();
+	for (int i = 0; i < npt; i++)
+	{
+		vector pos = point(0, "P", pts[i]);
+		vector delta = pos - rest;
+		rest = pos;
+
+		// Make normal. Point normals could be used instead.
+		vector normal = normalize(cross(cross({0, 1, 0}, delta), delta));
+		if (length(normal) == 0)
+		{
+			normal = {0, 0, 1};
+		}
+
+		// Drive a shape with ramps and multipliers.
+		vector axis;
+		float ramp, angle;
+
+		// Twist the bend axis.
+		axis = normalize(delta);
+		ramp = chramp("twist_profile", (float) i / npt);
+		angle = fit01(ramp, -TWO_PI, TWO_PI) * ch("twist") / (npt - 1);
+		rotate(frame, angle, axis);
+
+		// Bend the curve.
+		axis = normalize(cross(normal, delta));
+		ramp = chramp("bend_profile", (float) i / npt);
+		angle = fit01(ramp, -TWO_PI, TWO_PI) * ch("bend") / (npt - 1);
+		rotate(frame, angle, axis);
+
+		// Compute new position and normal.
+		vector new_pos = delta * frame + prev_pos;
+		prev_pos = new_pos;
+		setpointattrib(0, "P", pts[i], new_pos);
+		setpointattrib(0, "N", pts[i], normal * frame);
+	}
+	
+	
+attribwrangle/snippet
+	curves add Attrib (context primitive)
+	int primPt[] = primpoints(0,@primnum);
+	int primPtLength = len(primPt);
+
+
+	for (int i = 0; i<primPtLength; i++){
+	        float primPtPos = float(i)/float(primPtLength);
+	        // setpointattrib( 0, "primLength", primPt[i], primPtLength);
+	        setpointattrib( 0, "cU", primPt[i], primPtPos);
+	        setpointattrib( 0, "primId", primPt[i], @primnum);
+
+	}
+	
+attribwrangle/snippet
+	particle stretch
+	float stretchscale = chf("stretch_scale");
+	float maxstretch = chf("max_stretch");
+	float minsize = chf("min_size");
+	float particledensity = chf("particle_density");
+
+	vector stretchvec = -v@v * stretchscale;
+	float len = length(stretchvec);
+	if (len > maxstretch)
+			stretchvec *= (maxstretch / len);
+
+	float radius = @pscale;
+	vector origpos = @P;
+	int nparticles = int(particledensity * len / radius) - 1;
+	if (!nparticles)
+		return;
+
+	for (int i=1; i <= nparticles; i++)
+	{
+		float duplicatepos = float(i) / float(nparticles);
+		float duplicatepscale = lerp(radius, radius * minsize, duplicatepos);
+		int newpt = addpoint(geoself(), @ptnum);
+		setpointattrib(geoself(), "P", newpt, origpos + duplicatepos * stretchvec);
+		setpointattrib(geoself(), "pscale", newpt, duplicatepscale);
+	}
+	
+	
+	
+	
+	
+attribwrangle/snippet
+    ae_include
+    #include <aevex.vfl>
+	
+	
+attribwrangle/snippet
+	collision Deform
+	int nearestptnum = nearpoint(1, @P);            // get nearest pt number
+	vector nearestpt = point(1, "P", nearestptnum); // get nearest pt
+	float dist = length(@P - nearestpt);            // distance to nearest pt of collider
+
+	@P = dist < ch("range") ? lerp(@P,@P+@N, ch("deform")*chramp("lip",fit(dist,0,1,0,1))*(1-dist)) : @P;
+
+attribwrangle/snippet
+	Is in Point Cloud
+	int pcl = 1;
+	f@dot = -1;
+
+	float maxDist = 10;
+	int maxPts = 50;
+	int hnd = pcopen(pcl, "P", @P, maxDist, maxPts);
+
+	//get center and gather vectors
+	vector tgCt = set(0,0,0);
+	int tgCnt = pcnumfound(hnd);
+	vector tgVects[];
+	while(pciterate(hnd)){
+	    vector tgP;
+	    pcimport(hnd,"P",tgP);
+	    
+	    tgCt+=tgP;
+
+	    vector tgVec = normalize(tgP-@P);
+	    push(tgVects,tgVec);
+	}
+
+	tgCt /= float(tgCnt);
+
+
+	vector ctV = normalize(tgCt-@P);
+
+	//get min dot product
+	float minDot = 1;
+
+	foreach(int i;vector tgV;tgVects){
+	    float tgDot = dot(tgV,ctV);
+	    minDot = min(tgDot,minDot);
+	}
+
+	f@dot = minDot;
